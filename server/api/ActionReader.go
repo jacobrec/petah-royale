@@ -38,8 +38,14 @@ func (ar *ActionReader) ToAction(data []byte) Event {
 
     fmt.Println(evt.Action)
 
-    umdata := reflect.New(ar.Get(evt.Action)).Interface()
-    json.Unmarshal(evt.Data, &umdata)
-
-    return Event{evt.Action, umdata}
+    typ := ar.Get(evt.Action)
+    if typ != nil {
+        umdata := reflect.New(typ).Interface()
+        json.Unmarshal(evt.Data, &umdata)
+        return Event{evt.Action, umdata}
+    } else {
+        var umdata interface{}
+        json.Unmarshal(evt.Data, &umdata)
+        return Event{evt.Action, umdata}
+    }
 }

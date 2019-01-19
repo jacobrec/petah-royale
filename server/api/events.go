@@ -4,7 +4,6 @@ import (
     "reflect"
 )
 
-
 func DefaultEventsAR() ActionReader {
     return ActionReader{map[string]reflect.Type{
         "move": reflect.TypeOf(Move{}),
