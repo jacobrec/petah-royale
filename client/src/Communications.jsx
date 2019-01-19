@@ -14,7 +14,22 @@ export default class Coms {
 
   }
 
-  sendMessage() {
+  sendShot(x, y, angle, weapon){
+    this.sendMessage({
+      action: "attack",
+      data: { angle, x, y, weapon }
+    })
+
+  }
+  sendMove(x, y){
+    this.sendMessage({
+      action: "move",
+      data: { x, y }
+    })
+  }
+
+  sendMessage(msg) {
+    this.ws.send(msg)
   }
 }
 
