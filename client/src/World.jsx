@@ -5,6 +5,9 @@ export default class World {
     this.walls = [new Immoveable(0,0,80,1),new Immoveable(0,0,1,60),new Immoveable(0,59,80,1),new Immoveable(79,0,1,60)]
 
     this.size = { width, height }
+    this.enemies.push(new Moveable(10,10))
+    this.enemies.push(new Moveable(20,10))
+    this.enemies.push(new Moveable(10,50))
   }
 
   update(delta) {
