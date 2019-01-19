@@ -14,5 +14,8 @@ func Begin(port string) {
     router := gin.Default()
 
     router.GET("/test", getTest)
+    router.GET("/ws", func(c *gin.Context) {
+        wshandler(c.Writer, c.Request)
+    })
     router.Run(port)
 }
