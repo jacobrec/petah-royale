@@ -72,12 +72,6 @@ class Player extends Moveable {
 
 
 
-
-
-
-
-
-
 // COLLISOIN DETECTION STUFF
 function circleSquareCollides(cx, cy, cr, x, y, w, h){
   return (
