@@ -10,11 +10,6 @@ type rawEvent struct {
     Data json.RawMessage `json:"data"`
 }
 
-type Event struct {
-    Action string        `json:"action"`
-    Data interface{}     `json:"data"`
-}
-
 type ActionReader struct {
     Intermap map[string]reflect.Type
 }

@@ -94,7 +94,7 @@ func onLeave(g *gameObject, id interface{}){
 }
 
 func onMove(g *gameObject, id interface{}, event api.Event){
-    move := event.Data.(*api.Move)
+    move := event.Data.(*Move)
     pid := g.connectionToGame[id]
 
     pp := g.w.getPlayerById(pid)
@@ -105,7 +105,7 @@ func onMove(g *gameObject, id interface{}, event api.Event){
 }
 
 func (g* gameObject) sendPlayerMove(player Moveable){
-    data := api.Draw{player.Id, player.X, player.Y}
+    data := Draw{player.Id, player.X, player.Y}
     ev := api.Event{"draw", data}
     for _, conn := range g.gameToConnection {
         g.gf.Send(ev, conn)

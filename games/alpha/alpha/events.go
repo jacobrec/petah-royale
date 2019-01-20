@@ -1,11 +1,12 @@
-package api
+package alpha
 
 import (
     "reflect"
+    "github.com/jacobrec/petah-royale/server/api"
 )
 
-func DefaultEventsAR() ActionReader {
-    return ActionReader{map[string]reflect.Type{
+func EventsAR() api.ActionReader {
+    return api.ActionReader{map[string]reflect.Type{
         "move": reflect.TypeOf(Move{}),
         "shoot": reflect.TypeOf(Shoot{}),
 
