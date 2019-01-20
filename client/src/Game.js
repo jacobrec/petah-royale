@@ -32,7 +32,7 @@ export default class Game extends Component {
   render() {
     return (
       <div className="App">
-        <MyGame fps={30} id="jgraphic-panel" width="800" height="600"/>
+        <MyGame fps={5} id="jgraphic-panel" width="800" height="600"/>
       </div>
     )
   }

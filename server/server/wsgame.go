@@ -13,6 +13,7 @@ import (
 var wsupgrader = websocket.Upgrader{
     ReadBufferSize:  1024,
     WriteBufferSize: 1024,
+    CheckOrigin: func(r *http.Request) bool { return true },
 }
 
 type WSgame struct {
@@ -25,7 +26,9 @@ func NewWSgame(ar api.ActionReader) WSgame {
 
 func (wsg *WSgame) Send(evt api.Event, id interface{}) {
     conn := id.(*websocket.Conn)
+    fmt.Println(evt)
     msg, _ := json.Marshal(evt)
+    fmt.Println(string(msg))
     conn.WriteMessage(websocket.TextMessage, msg)
 }
 
@@ -45,13 +48,12 @@ func (wsg *WSgame) GameHandler(w http.ResponseWriter, r *http.Request) {
     wsg.HandleJoin(conn)
 
     for {
-        t, msg, err := conn.ReadMessage()
+        _, msg, err := conn.ReadMessage()
         if err != nil {
             break
         }
 
         wsg.HandleEvt(msg, &conn)
-        conn.WriteMessage(t, msg)
     }
 
     wsg.HandleLeave(&conn)

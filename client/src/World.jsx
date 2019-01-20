@@ -2,12 +2,19 @@ export default class World {
   constructor(width, height, coms) {
     this.player = new Player(40, 30, coms)
     this.enemies = []
-    this.walls = [new Immoveable(0,0,80,1),new Immoveable(0,0,1,60),new Immoveable(0,59,80,1),new Immoveable(79,0,1,60)]
+    this.walls = []
 
     this.size = { width, height }
+
+      /*
     this.enemies.push(new Moveable(10,10))
     this.enemies.push(new Moveable(20,10))
     this.enemies.push(new Moveable(10,50))
+    this.enemies.push(new Immoveable(0,0,80,1))
+    this.enemies.push(new Immoveable(0,0,1,60))
+    this.enemies.push(new Immoveable(0,59,80,1))
+    this.enemies.push(new Immoveable(79,0,1,60))
+    */
   }
 
   update(delta) {
