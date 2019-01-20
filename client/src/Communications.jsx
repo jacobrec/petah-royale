@@ -1,6 +1,6 @@
 export default class Coms {
   constructor(url){
-    const ws = new WebSocket("ws://" + url)
+      const ws = new WebSocket("ws://" + url + "/wsgame")
     ws.onopen = (event) => this.setup(ws)
     ws.onmessage = (event) => this.messageRecived(event.data)
 
