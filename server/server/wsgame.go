@@ -26,9 +26,7 @@ func NewWSgame(ar api.ActionReader) WSgame {
 
 func (wsg *WSgame) Send(evt api.Event, id interface{}) {
     conn := id.(*websocket.Conn)
-    fmt.Println(evt)
     msg, _ := json.Marshal(evt)
-    fmt.Println(string(msg))
     conn.WriteMessage(websocket.TextMessage, msg)
 }
 
