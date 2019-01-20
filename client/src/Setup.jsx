@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
-const url = "http://localhost:8049"
+const url = ":8049"
 const jid = "join-loc"
 
-function makeGame(){
-  fetch(`${url}/new`, { method: 'post' })
+function makeGame(hn){
+  fetch(`http://${hn}${url}/new`, { method: 'post' })
   .then((r) => r.json())
   .then((r) => window.location.href = `game/${r}`)
   .catch((e) => console.error(e))
@@ -38,9 +38,10 @@ export class Join extends Component {
 
 export default class Setup extends Component {
   render() {
+    var host = window.location.hostname
     return (
       <div className="App">
-        <button onClick={(ev) => makeGame()}>Create Game</button>
+        <button onClick={(ev) => makeGame(host)}>Create Game</button>
         <button onClick={(ev) => window.location.href='join' }>Join Game</button>
       </div>
     )
