@@ -34,7 +34,7 @@ type Moveable struct {
 	Id     int     `json:"id"`
 	X      float64 `json:"x"`
 	Y      float64 `json:"y"`
-	Radius float64 `json:"radius"`
+	Size float64 `json:"radius"`
 }
 
 // all immovable objects are rectangles
@@ -81,7 +81,7 @@ func onJoin(g *gameObject, id interface{}) {
 	player := Moveable{pid, x, y, 0.5}
 	g.w.Players = append(g.w.Players, player)
 
-	data := New{player.Id, player.X, player.Y, player.Radius}
+	data := New{player.Id, player.X, player.Y, player.Size/2}
 	ev := api.Event{"new", data}
 	distributeMessage(g, ev, id)
 
@@ -172,7 +172,7 @@ func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
     var hitplayer Moveable
     hitplayer.Id = -1
     for _, pl := range g.w.Players {
-		pwall := Rectangle{pl.X, pl.Y, pl.Radius*2, pl.Radius*2}
+		pwall := Rectangle{pl.X, pl.Y, pl.Size, pl.Size}
         if IsRectorsect(pwall, shot) && pl.Id != pid {
             p, _ := Rectorsect(pwall, shot)
 			if isP1Closer(shoot.X, shoot.Y, p.x, p.y, endX, endY) {
