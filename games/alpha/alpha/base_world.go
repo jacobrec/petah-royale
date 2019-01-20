@@ -137,6 +137,11 @@ func distributeMessage(g *gameObject, ev api.Event, not interface{}) {
 		}
 	}
 }
+func sendToAll(g *gameObject, ev api.Event) {
+	for _, conn := range g.gameToConnection {
+        g.gf.Send(ev, conn)
+	}
+}
 
 func onShoot(g *gameObject, id interface{}, event api.Event) {
 	shoot := event.Data.(*Shoot)
@@ -146,8 +151,7 @@ func onShoot(g *gameObject, id interface{}, event api.Event) {
 	ev := api.Event{"bang", bang}
 
 	fmt.Println(p.X, p.Y)
-	//distributeMessage(g, ev, id)
-	g.gf.Send(ev, id)
+	sendToAll(g, ev)
 }
 
 
@@ -191,6 +195,10 @@ func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
 
     if hitplayer != nil {
         fmt.Println("killed", hitplayer)
+        dead := Dead{hitplayer.Id}
+        ev := api.Event{"dead", dead}
+        sendToAll(g, ev)
+        g.gf.Disconnect(g.gameToConnection[hitplayer.Id])
     }
 
 	return Point{float64(endX) / 100, float64(endY) / 100}
