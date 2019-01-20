@@ -15,39 +15,39 @@ func StartWorld(gf GameIF) {
 }
 
 func makeGame(gf GameIF) gameObject {
-    w := world{80, 60, make([]moveable, 0), make([]immoveable, 0)}
-    w.walls = append(w.walls, immoveable{0,0,80,1}, immoveable{0,0,1,60}, immoveable{0,59,80,1}, immoveable{79,0,1,60})
+    w := world{80, 60, make([]Moveable, 0), make([]Immoveable, 0)}
+    w.Walls = append(w.Walls, Immoveable{0,0,80,1}, Immoveable{0,0,1,60}, Immoveable{0,59,80,1}, Immoveable{79,0,1,60})
 
     return gameObject{w, gf, make(map[interface{}]int, 3), make(map[int]interface{}, 3)}
 }
 
 
 // all movable objects are circles
-type moveable struct {
-    id int
-    x float64
-    y float64
-    radius float64
+type Moveable struct {
+    Id int `json:"id"`
+    X float64 `json:"x"`
+    Y float64 `json:"y"`
+    Radius float64 `json:"radius"`
 }
 
 // all immovable objects are rectangles
-type immoveable struct {
-    x float64
-    y float64
-    width float64
-    height float64
+type Immoveable struct {
+    X float64 `json:"x"`
+    Y float64 `json:"y"`
+    Width float64 `json:"width"`
+    Height float64 `json:"height"`
 }
 
 type world struct {
-    width int
-    height int
-    players []moveable
-    walls []immoveable
+    Width int `json:"width"`
+    Height int `json:"height"`
+    Players []Moveable `json:"players"`
+    Walls []Immoveable `json:"walls"`
 }
 
-func (w* world) getPlayerById(id int) *moveable {
-    for _, p := range w.players {
-        if p.id == id {
+func (w* world) getPlayerById(id int) *Moveable {
+    for _, p := range w.Players {
+        if p.Id == id {
             return &p
         }
     }
@@ -61,6 +61,13 @@ type gameObject struct {
     gameToConnection map[int]interface{}
 }
 
+type InitialMessage struct {
+    Id int `json:"id"`
+    X float64 `json:"x"`
+    Y float64 `json:"y"`
+    World world `json:"world"`
+}
+
 var playerCount int
 
 func onJoin(g *gameObject, id interface{}){
@@ -70,10 +77,14 @@ func onJoin(g *gameObject, id interface{}){
     g.connectionToGame[id] = pid
     g.gameToConnection[pid] = id
 
-    player := moveable{pid, 2, 2, 0.5}
-    g.w.players = append(g.w.players, player)
+    player := Moveable{pid, 2, 2, 0.5}
+    g.w.Players = append(g.w.Players, player)
 
     g.sendPlayerMove(player)
+
+    data := InitialMessage{pid, player.X, player.Y, g.w}
+    g.gf.Send(api.Event{"initial", data}, id)
+
 }
 
 func onLeave(g *gameObject, id interface{}){
@@ -84,14 +95,14 @@ func onMove(g *gameObject, id interface{}, event api.Event){
     pid := g.connectionToGame[id]
 
     pp := g.w.getPlayerById(pid)
-    pp.x = move.X
-    pp.y = move.Y
+    pp.X = move.X
+    pp.Y = move.Y
 
     g.sendPlayerMove(*pp)
 }
 
-func (g* gameObject) sendPlayerMove(player moveable){
-    data := api.Draw{player.id, player.x, player.y}
+func (g* gameObject) sendPlayerMove(player Moveable){
+    data := api.Draw{player.Id, player.X, player.Y}
     ev := api.Event{"draw", data}
     for _, conn := range g.gameToConnection {
         g.gf.Send(ev, conn)
