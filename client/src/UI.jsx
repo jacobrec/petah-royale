@@ -8,6 +8,8 @@ const pallet = {
 
 export default class UI {
   draw(gfx, world) {
+    if(!world.player.alive)
+      return gfx.background(pallet.enemy)
     gfx.background(pallet.background)
 
     // Draw Player

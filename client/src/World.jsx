@@ -15,8 +15,7 @@ export default class World {
     this.enemies.push(new Moveable(10,50))
     this.enemies.push(new Immoveable(0,0,80,1))
     this.enemies.push(new Immoveable(0,0,1,60))
-    this.enemies.push(new Immoveable(0,59,80,1))
-    this.enemies.push(new Immoveable(79,0,1,60))
+    this.enemies.push(new Immoveable(0,59,80,1)) this.enemies.push(new Immoveable(79,0,1,60))
     */
   }
 
@@ -66,6 +65,7 @@ class Moveable {
 class Player extends Moveable {
   constructor(x, y) {
     super(x, y)
+    this.alive = true
   }
 
   shootTowards(x, y){

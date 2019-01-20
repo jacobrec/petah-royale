@@ -102,5 +102,12 @@ function doBang(world, data){
 }
 
 function doDead(world, data){
-  console.log("Dead")
+  console.log(data)
+  if(data.id === world.player.id){
+    // kill self if you died
+    world.player.alive = false
+  }else{
+    // remove enemy if they died
+    world.enemies = world.enemies.filter((e) => !e.id === data.id)
+  }
 }
