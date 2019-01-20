@@ -152,12 +152,16 @@ func onShoot(g *gameObject, id interface{}, event api.Event) {
 
 func getShotPath(g *gameObject, shoot *Shoot) Point {
 	var big = float64(g.w.Width * g.w.Height)
-	shot := resolv.NewLine(int32(shoot.X*100), int32(shoot.Y*100), int32(shoot.X*100+big*math.Cos(shoot.Angle)), int32(shoot.Y*100+big*math.Cos(shoot.Angle)))
+	shot := resolv.NewLine(int32(shoot.X*100), int32(shoot.Y*100), int32(shoot.X*100+big*math.Cos(shoot.Angle)), int32(shoot.Y*100+big*math.Sin(shoot.Angle)))
 
 	var endX, endY int32
 	for _, w := range g.w.Walls {
 		wall := resolv.NewRectangle(int32(w.X*100), int32(w.Y*100), int32(w.Width*100), int32(w.Height*100))
 		if shot.IsColliding(wall) {
+            ps := shot.IntersectionPoints(wall)
+            if len(ps) == 0{
+                continue
+            }
 			p := shot.IntersectionPoints(wall)[0]
 			if isP1Closer(int32(shoot.X*100), int32(shoot.Y*100), p.X, p.Y, endX, endY) {
 				endX = p.X

@@ -7,8 +7,10 @@ export default class Controller {
   }
 
   setupKeys() {
-    this.jgraphics.input.onMouseClick((x, y) => { this.world.player.shootTowards(x, y) },
-      {x:0, y:0, width:this.world.size.width, height: this.world.size.height})
+    this.jgraphics.input.onMouseClick((x, y) => {
+      console.log(x, y)
+      this.world.player.shootTowards(x, y)
+    }, {x:0, y:0, width:this.world.size.width, height: this.world.size.height})
     this.jgraphics.input.onKeyDown('w', () => { this.world.player.vy = 5 })
     this.jgraphics.input.onKeyDown('s', () => { this.world.player.vy = -5 })
     this.jgraphics.input.onKeyDown('d', () => { this.world.player.vx = 5 })
