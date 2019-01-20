@@ -39,36 +39,57 @@ func IsRectorsect(r Rectangle, l Line) bool {
 	_, e := Rectorsect(r, l)
 	return e == nil
 }
+
 func Rectorsect(r Rectangle, l Line) (Point, error) {
 	s1 := CreateLine(Point{r.x, r.y}, Point{r.x + r.width, r.y})
 	s2 := CreateLine(Point{r.x + r.width, r.y}, Point{r.x + r.width, r.y + r.height})
 	s3 := CreateLine(Point{r.x + r.width, r.y + r.height}, Point{r.x, r.y + r.height})
 	s4 := CreateLine(Point{r.x, r.y + r.height}, Point{r.x, r.y})
 
-	i1, _ := Intersection(l, s1)
-	i2, _ := Intersection(l, s2)
-	i3, _ := Intersection(l, s3)
-	i4, _ := Intersection(l, s4)
+	p1, _ := Rectorsector(l, s1, r)
+	p2, _ := Rectorsector(l, s2, r)
+	p3, _ := Rectorsector(l, s3, r)
+	p4, _ := Rectorsector(l, s4, r)
 
 	c := Point{r.x, r.y}
 	err := errors.New("The lines do not intersect")
-	p := rectorsect_getBetter(c, i1, i2)
-	p = rectorsect_getBetter(c, p, i3)
-	p = rectorsect_getBetter(c, p, i4)
+	p := rectorsect_getBetter(c, p1, p2, r)
+	p = rectorsect_getBetter(c, p, p3, r)
+	p = rectorsect_getBetter(c, p, p4, r)
 
 	if (p == Point{}) {
 		return p, err
 	}
 	return p, nil
+}
+
+func Rectorsector(l, s Line, r Rectangle) (Point, error){
+	i1, e := Intersection(l, s)
+    if e != nil {
+        return Point{}, e
+    }
+
+	err := errors.New("The lines do not intersect in the bounds")
+    if !PointInRectangle(i1, r){
+        return Point{}, err
+    }
+
+    return i1, nil
+
 
 }
-func rectorsect_getBetter(c, p1, p2 Point) Point {
+
+func rectorsect_getBetter(c, p1, p2 Point, r Rectangle) Point {
 	if (p1 == Point{} || math.IsNaN(p1.x) || math.IsNaN(p1.y)) {
-		return p2
+        if PointInRectangle(p2, r) {
+            return p2
+        }
 	}
 
 	if (p2 == Point{} || math.IsNaN(p2.x) || math.IsNaN(p2.y)) {
-		return p1
+        if PointInRectangle(p1, r) {
+            return p1
+        }
 	}
 
 	if dist2(c, p1) < dist2(c, p2) {
@@ -82,6 +103,7 @@ func dist2(p1, p2 Point) float64 {
 	return (p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y)
 }
 
+// Checks infinite line intersection
 func Intersection(l1, l2 Line) (Point, error) {
 	if l1.slope == l2.slope {
 		return Point{}, errors.New("The lines do not intersect")

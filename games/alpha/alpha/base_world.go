@@ -22,7 +22,7 @@ func StartWorld(gf core.GameIF) {
 }
 
 func makeGame(gf core.GameIF) gameObject {
-	w := world{40, 30, make([]Moveable, 0), make([]Immoveable, 0)}
+	w := world{80, 60, make([]Moveable, 0), make([]Immoveable, 0)}
 	walls, spawner := MakeMaze(6, w.Width, w.Height, .25)
 	w.Walls = walls
 
