@@ -82,7 +82,11 @@ func onJoin(g *gameObject, id interface{}){
     player := Moveable{pid, 2, 2, 0.5}
     g.w.Players = append(g.w.Players, player)
 
-    g.sendPlayerMove(player)
+    data := New{player.Id, player.X, player.Y, player.Size}
+    ev := api.Event{"new", data}
+    for _, conn := range g.gameToConnection {
+        g.gf.Send(ev, conn)
+    }
 
     data := InitialMessage{pid, player.X, player.Y, g.w}
     g.gf.Send(api.Event{"initial", data}, id)
@@ -90,7 +94,11 @@ func onJoin(g *gameObject, id interface{}){
 }
 
 func onLeave(g *gameObject, id interface{}){
-    fmt.Println("Player left")
+    data := Exit{g.w.getPlayerById(pid)}
+    ev := api.Event{"exit", data}
+    for _, conn := range g.gameToConnection {
+        g.gf.Send(ev, conn)
+    }
 }
 
 func onMove(g *gameObject, id interface{}, event api.Event){
