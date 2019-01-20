@@ -8,13 +8,13 @@ func StartWorld(gf *GameIF) {
 
     g := makeGame(gf)
 
-    gf.OnJoin(func(id interface{}) { onJoin(g, id) })
-    gf.OnLeave(func(id interface{}) { onLeave(g, id) })
-    gf.OnEvent("shoot", func(id interface{}) { onShoot(g, id) })
-    gf.OnEvent("move", func(id interface{}) { onMove(g, id) })
+    gf.OnJoin(func(id interface{}) { onJoin(&g, id) })
+    gf.OnLeave(func(id interface{}) { onLeave(&g, id) })
+    gf.OnEvent("shoot", func(id interface{}) { onShoot(&g, id) })
+    gf.OnEvent("move", func(id interface{}) { onMove(&g, id) })
 }
 
-func makeGame(gf *GameIF) {
+func makeGame(gf *GameIF) gameObject {
     w := world{80, 60, make([]moveable, 0), make([]immoveable, 0)}
     w.walls = append(w.walls, immoveable{0,0,80,1}, immoveable{0,0,1,60}, immoveable{0,59,80,1}, immoveable{79,0,1,60})
 
@@ -36,7 +36,6 @@ type immoveable struct {
     y float64
     width float64
     height float64
-
 }
 
 type world struct {
@@ -49,18 +48,34 @@ type world struct {
 type gameObject struct {
     w world
     gf *GameIF
+    connectionToGame[interface{}] int
+    gameToConnection[int] interface{}
 }
 
-func onJoin(gf gameObject, id interface{}){
+var playerCount int
+
+func onJoin(gf *gameObject, id interface{}){
+    pid = playerCount
+    playerCount++
+
+    connectionToGame[id] = pid
+    gameToConnection[pid] = id
+
+    player := moveable{pid, 2, 2, 0.5}
+    gf.w.players = append(gf.w.players, player)
+
+    gf.sendPlayerMove(player)
 }
 
-func onLeave(gf gameObject, id interface{}){
+func onLeave(gf *gameObject, id interface{}){
 }
 
-func onMove(gf gameObject, id interface{}, event api.Event){
+func onMove(gf *gameObject, id interface{}, event api.Event){
     move := event.Data.(api.Move)
 }
+func (gf* gameObject) sendPlayerMove(player moveable){
+}
 
-func onShoot(gf gameObject, id interface{}, event api.Shoot){
+func onShoot(gf *gameObject, id interface{}, event api.Shoot){
     shoot := event.Data.(api.Shoot)
 }
