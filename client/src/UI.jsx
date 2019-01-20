@@ -26,7 +26,7 @@ export default class UI {
     // Draw Shots
     world.shots.forEach((shot) => {
       gfx.line(shot.x1, shot.y1, shot.x2, shot.y2, pallet.shot)
-      if(shot.stamp + 500 < Date.now()){
+      if(shot.stamp + world.bulletLife < Date.now()){
         shot.dead = true
       }
     })

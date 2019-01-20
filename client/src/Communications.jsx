@@ -23,6 +23,8 @@ export default class Coms {
         return doExit(world, msg.data)
       case "bang":
         return doBang(world, msg.data)
+      case "dead":
+        return doDead(world, msg.data)
       default:
         console.error("Unknown Message Type")
         console.error(msg)
@@ -92,9 +94,13 @@ function doNew(world, data){
 function doExit(world, data){
   world.enemies = world.enemies.filter((e) => !e.id === data.id)
 }
+
 function doBang(world, data){
   data.stamp = Date.now()
   data.dead = false
   world.shots.push(data)
 }
 
+function doDead(world, data){
+  console.log("Dead")
+}

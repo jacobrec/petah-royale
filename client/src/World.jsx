@@ -6,6 +6,7 @@ export default class World {
     this.walls = []
     this.shots = []
 
+    this.bulletLife = 200
     this.size = { width, height }
 
     /*
