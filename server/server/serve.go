@@ -9,7 +9,7 @@ func getTest(c *gin.Context) {
     c.String(http.StatusOK, "test string")
 }
 
-func Begin(wsgame WSgame, port string) {
+func Begin(wsgame *WSgame, port string) {
     router := gin.Default()
 
     router.GET("/test", getTest)
