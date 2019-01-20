@@ -26,7 +26,11 @@ export default class UI {
     // Draw Shots
     console.log(world.shots)
     world.shots.forEach((shot) => {
-      gfx.line(shot.X1, shot.Y1, shot.X2, shot.Y2, pallet.shot)
+      gfx.line(shot.x1, shot.y1, shot.x2, shot.y2, pallet.shot)
+      if(shot.stamp + 500 < Date.now()){
+        shot.dead = true
+      }
     })
+    world.shots = world.shots.filter((s) => !s.dead)
   }
 }

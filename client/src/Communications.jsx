@@ -94,6 +94,7 @@ function doExit(world, data){
 }
 function doBang(world, data){
   data.stamp = Date.now()
-    //world.shots.push(data)
+  data.dead = false
+  world.shots.push(data)
 }
 
