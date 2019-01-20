@@ -5,7 +5,7 @@ import (
 )
 
 
-func MakeMaze(rooms int, width int, height int, density float32, pathtries int) ([]Immoveable, func() (float64,float64)) {
+func MakeMaze(rooms int, width int, height int, density float32) ([]Immoveable, func() (float64,float64)) {
     meanwidth := int(float32(width)*density)
     meanheight := int(float32(height)*density)
 
@@ -16,12 +16,12 @@ func MakeMaze(rooms int, width int, height int, density float32, pathtries int) 
     }
 
     for n := 0; n < rooms; n++ {
-        x := rand.Intn(width - meanwidth)
-        y := rand.Intn(height - meanheight)
         w := meanwidth - 2 + rand.Intn(4)
         h := meanheight - 2 + rand.Intn(4)
+        x := 1 + rand.Intn(width - w - 2)
+        y := 1 + rand.Intn(height - h - 2)
 
-        if hasOverlap(raster, x, y, w, h) {
+        if hasOverlap(raster, x-1, y-1, w+2, h+2) {
             n--
             continue
         }
@@ -31,30 +31,12 @@ func MakeMaze(rooms int, width int, height int, density float32, pathtries int) 
                 raster[i][j] = true
             }
         }
+
+        if n > 0 {
+            drillForcedPath(raster, x, y, w, h, width, height)
+        }
     }
 
-    for i := 0; i < pathtries; i++ {
-        x := rand.Intn(width)
-        y := rand.Intn(height)
-
-        for !raster[x][y] {
-            x = rand.Intn(width)
-            y = rand.Intn(height)
-        }
-
-
-        switch rand.Intn(4) {
-            case 0:
-                drillPath(raster, width, height, x, y, 1, 0)
-            case 1:
-                drillPath(raster, width, height, x, y, -1, 0)
-            case 2:
-                drillPath(raster, width, height, x, y, 0, 1)
-            case 3:
-                drillPath(raster, width, height, x, y, 0, -1)
-        }
-
-    }
 
     spawner := func() (float64, float64) {
         x := rand.Intn(width)
@@ -88,6 +70,27 @@ func MakeMaze(rooms int, width int, height int, density float32, pathtries int) 
     return imv, spawner
 }
 
+func drillForcedPath(raster[][]bool, xb int, yb int, w int, h int, width int, height int) {
+    i := false
+    // upper bound, sometimes paths can't be found
+    for j := 0; !i && j < 1000;  j++ {
+        x := xb + rand.Intn(w)
+        y := yb + rand.Intn(h)
+
+        switch rand.Intn(4) {
+            case 0:
+                i = drillPath(raster, width, height, x, y, 1, 0)
+            case 1:
+                i = drillPath(raster, width, height, x, y, -1, 0)
+            case 2:
+                i = drillPath(raster, width, height, x, y, 0, 1)
+            case 3:
+                i = drillPath(raster, width, height, x, y, 0, -1)
+        }
+
+    }
+}
+
 func hasOverlap(raster [][]bool, x int, y int, w int, h int) bool {
     for i := x; i < x+w; i++ {
         for j := y; j < y+h; j++ {
@@ -99,10 +102,10 @@ func hasOverlap(raster [][]bool, x int, y int, w int, h int) bool {
     return false;
 }
 
-func drillPath(raster [][]bool, xdim int, ydim int, x int, y int, xdir int, ydir int) {
+func drillPath(raster [][]bool, xdim int, ydim int, x int, y int, xdir int, ydir int) bool {
     state := raster[x][y]
     if !state {
-        return
+        return false
     }
 
     startx := x
@@ -112,7 +115,7 @@ func drillPath(raster [][]bool, xdim int, ydim int, x int, y int, xdir int, ydir
         x += xdir
         y += ydir
         if x < 0 || x >= xdim || y < 0 || y >= ydim {
-            return
+            return false
         }
 
         if !state && raster[x][y] {
@@ -130,6 +133,8 @@ func drillPath(raster [][]bool, xdim int, ydim int, x int, y int, xdir int, ydir
         x -= xdir
         y -= ydir
     }
+
+    return true
 }
 
 
