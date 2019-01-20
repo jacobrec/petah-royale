@@ -1,6 +1,6 @@
 export default class Coms {
   constructor(url){
-      const ws = new WebSocket("ws://" + url + "/wsgame")
+    const ws = new WebSocket("ws://" + url + "/wsgame")
     ws.onopen = (event) => this.setup(ws)
     ws.onmessage = (event) => this.messageRecived(event.data)
 
@@ -11,7 +11,7 @@ export default class Coms {
   }
 
   messageRecived(msg) {
-
+    console.log(msg)
   }
 
   sendShot(x, y, angle, weapon){
@@ -29,7 +29,7 @@ export default class Coms {
   }
 
   sendMessage(msg) {
-    this.ws.send(msg)
+    this.ws.send(JSON.stringify(msg))
   }
 }
 
