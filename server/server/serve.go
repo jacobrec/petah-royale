@@ -3,17 +3,13 @@ package server
 import (
     "net/http"
     "github.com/gin-gonic/gin"
-    "github.com/jacobrec/petah-royale/server/api"
 )
 
 func getTest(c *gin.Context) {
     c.String(http.StatusOK, "test string")
 }
 
-func Begin(port string) {
-
-    wsgame := NewWSgame(api.DefaultEventsAR())
-
+func Begin(wsgame WSgame, port string) {
     router := gin.Default()
 
     router.GET("/test", getTest)
