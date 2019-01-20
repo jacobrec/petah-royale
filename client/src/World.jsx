@@ -69,7 +69,7 @@ class Player extends Moveable {
 
   shootTowards(x, y){
     const angle = Math.atan2( y - this.y, x - this.x )
-    this.coms.sendShot(this.x, this.y, angle, 0)
+    this.coms.sendShot(this.x+this.size/2, this.y+this.size/2, angle, 0)
   }
 
   update(delta, immovable) {
