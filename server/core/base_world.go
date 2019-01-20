@@ -80,7 +80,7 @@ func onLeave(g *gameObject, id interface{}){
 }
 
 func onMove(g *gameObject, id interface{}, event api.Event){
-    move := event.Data.(api.Move)
+    move := event.Data.(*api.Move)
     pid := g.connectionToGame[id]
 
     pp := g.w.getPlayerById(pid)
@@ -99,5 +99,5 @@ func (g* gameObject) sendPlayerMove(player moveable){
 }
 
 func onShoot(gf *gameObject, id interface{}, event api.Event){
-    //shoot := event.Data.(api.Shoot)
+    //shoot := event.Data.(*api.Shoot)
 }
