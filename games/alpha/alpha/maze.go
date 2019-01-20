@@ -2,10 +2,11 @@ package alpha
 
 import (
     "math/rand"
+    "fmt"
 )
 
 
-func MakeMaze(rooms int, width int, height int, density float32) ([]Immoveable, func() (float64,float64)) {
+func MakeMaze(rooms int, width int, height int, density float32, pathtries int) ([]Immoveable, func() (float64,float64)) {
     meanwidth := int(float32(width)*density)
     meanheight := int(float32(height)*density)
 
@@ -26,6 +27,29 @@ func MakeMaze(rooms int, width int, height int, density float32) ([]Immoveable, 
                 raster[i][j] = true
             }
         }
+    }
+
+    for i := 0; i < pathtries; i++ {
+        x := rand.Intn(width)
+        y := rand.Intn(height)
+
+        for !raster[x][y] {
+            x = rand.Intn(width)
+            y = rand.Intn(height)
+        }
+
+
+        switch rand.Intn(4) {
+            case 0:
+                DrillPath(raster, width, height, x, y, 1, 0)
+            case 1:
+                DrillPath(raster, width, height, x, y, -1, 0)
+            case 2:
+                DrillPath(raster, width, height, x, y, 0, 1)
+            case 3:
+                DrillPath(raster, width, height, x, y, 0, -1)
+        }
+
     }
 
     spawner := func() (float64, float64) {
@@ -59,4 +83,38 @@ func MakeMaze(rooms int, width int, height int, density float32) ([]Immoveable, 
 
     return imv, spawner
 }
+
+func DrillPath(raster [][]bool, xdim int, ydim int, x int, y int, xdir int, ydir int) {
+    state := raster[x][y]
+    if !state {
+        return
+    }
+
+    startx := x
+    starty := y
+
+    for true {
+        x += xdir
+        y += ydir
+        if x < 0 || x >= xdim || y < 0 || y >= ydim {
+            return
+        }
+
+        if !state && raster[x][y] {
+            break
+        }
+
+        state = raster[x][y]
+    }
+
+    for startx != x || starty != y {
+        raster[x][y] = true
+        raster[x+1][y] = true
+        raster[x+1][y+1] = true
+        raster[x][y+1] = true
+        x -= xdir
+        y -= ydir
+    }
+}
+
 
