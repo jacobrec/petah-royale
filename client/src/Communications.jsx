@@ -83,19 +83,10 @@ function doDraw(world, data){
 }
 
 function doNew(world, data){
-  if(world.player.id !== data.id){
-    console.log("NEW")
-    console.log(world.player)
-    console.log(world.player.id)
-    console.log(data.id)
-    console.log(world.player.id !== data.id)
-    data.size = data.radius*2
-    world.enemies.push(data)
-  }
+  data.size = data.radius*2
+  world.enemies.push(data)
 }
 
 function doExit(world, data){
-  console.log("EXIT")
-  console.log(data)
   world.enemies = world.enemies.filter((e) => !e.id === data.id)
 }

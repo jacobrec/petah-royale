@@ -3,6 +3,7 @@ package alpha
 import (
     "github.com/jacobrec/petah-royale/server/api"
     "github.com/jacobrec/petah-royale/server/core"
+    "fmt"
 )
 
 func StartWorld(gf core.GameIF) {
@@ -19,7 +20,7 @@ func makeGame(gf core.GameIF) gameObject {
     w := world{80, 60, make([]Moveable, 0), make([]Immoveable, 0)}
     w.Walls = append(w.Walls, Immoveable{0,0,80,1}, Immoveable{0,0,1,60}, Immoveable{0,59,80,1}, Immoveable{79,0,1,60})
 
-    return gameObject{w, gf, make(map[interface{}]int, 3), make(map[int]interface{}, 3)}
+    return gameObject{w, gf, make(map[interface{}]int, 3), make(map[int]interface{}, 3), 0}
 }
 
 
@@ -60,6 +61,7 @@ type gameObject struct {
     gf core.GameIF
     connectionToGame map[interface{}]int
     gameToConnection map[int]interface{}
+    LastId int
 }
 
 type InitialMessage struct {
@@ -69,11 +71,10 @@ type InitialMessage struct {
     World world `json:"world"`
 }
 
-var playerCount int
 
 func onJoin(g *gameObject, id interface{}){
-    pid := playerCount
-    playerCount++
+    pid := g.LastId
+    g.LastId++
 
     g.connectionToGame[id] = pid
     g.gameToConnection[pid] = id
@@ -121,4 +122,5 @@ func distributeMessage(g* gameObject, ev api.Event, not interface{}){
 
 func onShoot(gf *gameObject, id interface{}, event api.Event){
     //shoot := event.Data.(*api.Shoot)
+    fmt.Println("BANG")
 }
