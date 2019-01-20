@@ -1,24 +1,30 @@
 package server
 
+import (
+    "github.com/gin-gonic/gin"
+    "net/http"
+    "math/rand"
+)
+
 
 type GameServer struct {
     gamefun func() *WSgame
     games map[string]*WSgame
 }
 
-func NewGameServer(gamefun func() core.GameIF) {
-    return GameServer{gamefun, make(map[string]core.GameIF}
+func NewGameServer(gamefun func() *WSgame) GameServer {
+    return GameServer{gamefun, make(map[string]*WSgame)}
 }
 
 func (gm *GameServer) PostCreate(c *gin.Context) {
     id := randString(32)
-    gm.games[id] = gamefun()
+    gm.games[id] = gm.gamefun()
     c.String(http.StatusOK, id)
 }
 
 func (gm *GameServer) GameWS(c *gin.Context) {
     id := c.Params.ByName("id")
-    game := games[id]
+    game := gm.games[id]
 
     if game == nil {
         c.String(http.StatusNotFound, id)
@@ -26,6 +32,12 @@ func (gm *GameServer) GameWS(c *gin.Context) {
     }
 
     game.GameHandler(c.Writer, c.Request)
+}
+
+func (gm *GameServer) DelGame(c *gin.Context) {
+    id := c.Params.ByName("id")
+    delete(gm.games, id)
+    c.String(http.StatusOK, id)
 }
 
 
