@@ -22,9 +22,12 @@ func CreateGameServer(router *gin.RouterGroup, gamefun func() *WSgame) {
 }
 
 func (gm *GameServer) PostCreate(c *gin.Context) {
-    id := randString(32)
+    id := randString(6);
+    for gm.games[id] != nil {
+        id = randString(6);
+    }
     gm.games[id] = gm.gamefun()
-    c.String(http.StatusOK, id)
+    c.JSON(http.StatusOK, id)
 }
 
 func (gm *GameServer) GameWS(c *gin.Context) {
