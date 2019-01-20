@@ -1,26 +1,25 @@
 package core
 
 import (
-    "github.com/jacobrec/petah-royale/server/api"
+	"github.com/jacobrec/petah-royale/server/api"
 )
 
 type GameIF interface {
-    OnEvent(action string, cback func(id interface{}, evt api.Event))
-    OnJoin(cback func(id interface{}))
-    OnLeave(cback func(id interface{}))
-    Send(evt api.Event, id interface{})
-    GetClients() map[interface{}]bool
-    Disconnect(id interface{})
+	OnEvent(action string, cback func(id interface{}, evt api.Event))
+	OnJoin(cback func(id interface{}))
+	OnLeave(cback func(id interface{}))
+	Send(evt api.Event, id interface{})
+	GetClients() map[interface{}]bool
+	Disconnect(id interface{})
 }
-
 
 // GameMux provides utilities for GameIFs
 type GameMux struct {
-    ar api.ActionReader
-    clients map[interface{}]bool
-    handlers map[string]func(id interface{}, evt api.Event)
-    joinfun func(id interface{})
-    leavefun func(id interface{})
+	ar       api.ActionReader
+	clients  map[interface{}]bool
+	handlers map[string]func(id interface{}, evt api.Event)
+	joinfun  func(id interface{})
+	leavefun func(id interface{})
 }
 
 func NewGameMux(ar api.ActionReader) GameMux {
@@ -34,15 +33,15 @@ func NewGameMux(ar api.ActionReader) GameMux {
 }
 
 func (g *GameMux) OnEvent(action string, cback func(id interface{}, evt api.Event)) {
-    g.handlers[action] = cback
+	g.handlers[action] = cback
 }
 
 func (g *GameMux) OnJoin(cback func(id interface{})) {
-    g.joinfun = cback
+	g.joinfun = cback
 }
 
 func (g *GameMux) OnLeave(cback func(id interface{})) {
-    g.leavefun = cback
+	g.leavefun = cback
 }
 
 func (g *GameMux) GetClients() map[interface{}]bool {
