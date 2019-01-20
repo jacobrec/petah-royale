@@ -5,9 +5,9 @@ import (
 )
 
 type GameIF interface {
-    OnEvent(action string, cback func(g *GameIF, id interface{}, evt api.Event))
-    OnJoin(cback func(g *GameIF, id interface{}))
-    OnLeave(cback func(g *GameIF, id interface{}))
+    OnEvent(action string, cback func(id interface{}, evt api.Event))
+    OnJoin(cback func(id interface{}))
+    OnLeave(cback func(id interface{}))
     Send(evt api.Event, id interface{})
     GetClients() map[interface{}]bool
     Disconnect(id interface{})
@@ -18,34 +18,34 @@ type GameIF interface {
 type GameMux struct {
     ar api.ActionReader
     clients map[interface{}]bool
-    handlers map[string]func(g *GameIF, id interface{}, evt api.Event)
-    joinfun func(g *GameIF, id interface{})
-    leavefun func(g *GameIF, id interface{})
+    handlers map[string]func(id interface{}, evt api.Event)
+    joinfun func(id interface{})
+    leavefun func(id interface{})
 }
 
-func (g *GameMux) OnEvent(action string, cback func(gif *GameIF, id interface{}, evt api.Event)) {
+func (g *GameMux) OnEvent(action string, cback func(id interface{}, evt api.Event)) {
     g.handlers[action] = cback
 }
 
-func (g *GameMux) OnJoin(cback func(gif *GameIF, id interface{})) {
+func (g *GameMux) OnJoin(cback func(id interface{})) {
     g.joinfun = cback
 }
 
-func (g *GameMux) OnLeave(cback func(gif *GameIF, id interface{})) {
+func (g *GameMux) OnLeave(cback func(id interface{})) {
     g.leavefun = cback
 }
 
-func (g *GameMux) HandleEvt(gif *GameIF, data []byte, id interface{}) {
+func (g *GameMux) HandleEvt(data []byte, id interface{}) {
     evt := g.ar.ToAction(data)
-    g.handlers[evt.Action](gif, id, evt)
+    g.handlers[evt.Action](id, evt)
 }
 
-func (g *GameMux) HandleJoin(gif *GameIF, id interface{}) {
+func (g *GameMux) HandleJoin(id interface{}) {
     g.clients[id] = true
-    g.joinfun(gif, id)
+    g.joinfun(id)
 }
 
-func (g *GameMux) HandleLeave(gif *GameIF, id interface{}) {
+func (g *GameMux) HandleLeave(id interface{}) {
     delete(g.clients, id)
-    g.leavefun(gif, id)
+    g.leavefun(id)
 }
