@@ -41,10 +41,18 @@ func MakeMaze(rooms int, width int, height int, density float32) ([]Immoveable, 
     imv := make([]Immoveable, 0)
 
     for i := 0; i < width; i++ {
+        carry := 0
         for j := 0; j < height; j++ {
             if !raster[i][j] {
-                imv = append(imv, Immoveable{float64(i), float64(j), 1, 1})
+                carry++
+            } else if carry > 0 {
+                // optimize columns
+                imv = append(imv, Immoveable{float64(i), float64(j-carry), 1, float64(carry)})
+                carry = 0
             }
+        }
+        if (carry > 0) {
+            imv = append(imv, Immoveable{float64(i), float64(height-carry), 1, float64(carry)})
         }
     }
 
