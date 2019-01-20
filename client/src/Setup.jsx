@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 const url = "http://localhost:8049"
+const jid = "join-loc"
 
 function makeGame(){
   fetch(`${url}/new`, { method: 'post' })
@@ -10,6 +11,29 @@ function makeGame(){
 }
 
 function joinGame(){
+  const loc = document.getElementById(jid).value
+  if(loc)
+    window.location.href = `game/${loc}`
+}
+
+export class Join extends Component {
+  constructor(props) {
+    super(props)
+    window.addEventListener("keypress", (ev) => {
+      if(ev.key === "Enter") {
+        joinGame()
+      }
+    })
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <input id={jid}/>
+        <button onClick={(ev) => joinGame()}>Join Game</button>
+      </div>
+    )
+  }
 }
 
 export default class Setup extends Component {
@@ -17,7 +41,7 @@ export default class Setup extends Component {
     return (
       <div className="App">
         <button onClick={(ev) => makeGame()}>Create Game</button>
-        <button onClick={(ev) => joinGame()}>Join Game</button>
+        <button onClick={(ev) => window.location.href='join' }>Join Game</button>
       </div>
     )
   }
