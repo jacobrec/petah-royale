@@ -106,7 +106,7 @@ func onLeave(g *gameObject, id interface{}) {
 
 func removePlayer(g *gameObject, id interface{}) {
 	var na []Moveable
-    var pid = g.connectionToGame[id]
+	var pid = g.connectionToGame[id]
 	for _, v := range g.w.Players {
 		if v.Id == pid {
 			continue
