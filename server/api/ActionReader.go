@@ -1,7 +1,6 @@
 package api
 
 import (
-    "fmt"
     "reflect"
     "encoding/json"
 )
@@ -35,8 +34,6 @@ func (ar *ActionReader) Get(key string) reflect.Type {
 func (ar *ActionReader) ToAction(data []byte) Event {
     var evt rawEvent
     json.Unmarshal(data, &evt)
-
-    fmt.Println(evt.Action)
 
     typ := ar.Get(evt.Action)
     if typ != nil {

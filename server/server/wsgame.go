@@ -48,13 +48,12 @@ func (wsg *WSgame) GameHandler(w http.ResponseWriter, r *http.Request) {
     wsg.HandleJoin(conn)
 
     for {
-        t, msg, err := conn.ReadMessage()
+        _, msg, err := conn.ReadMessage()
         if err != nil {
             break
         }
 
         wsg.HandleEvt(msg, &conn)
-        conn.WriteMessage(t, msg)
     }
 
     wsg.HandleLeave(&conn)
