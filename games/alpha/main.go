@@ -24,5 +24,5 @@ func main() {
         return &wsgame
     })
 
-    router.Run(":8049")
+    router.Run(":80")
 }
