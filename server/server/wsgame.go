@@ -7,6 +7,7 @@ import (
     "github.com/gorilla/websocket"
     "encoding/json"
     "fmt"
+    "sync"
 )
 
 
@@ -20,30 +21,42 @@ type WSgame struct {
     core.GameMux
 }
 
+type concConn struct {
+    conn *websocket.Conn
+    mu sync.Mutex
+}
+
 func NewWSgame(ar api.ActionReader) WSgame {
     return WSgame{core.NewGameMux(ar)}
 }
 
 func (wsg *WSgame) Send(evt api.Event, id interface{}) {
-    conn := id.(*websocket.Conn)
+    conn := id.(*concConn)
     msg, _ := json.Marshal(evt)
-    conn.WriteMessage(websocket.TextMessage, msg)
+    conn.mu.Lock()
+    defer conn.mu.Unlock()
+    conn.conn.WriteMessage(websocket.TextMessage, msg)
 }
 
 func (wsg *WSgame) Disconnect(id interface{}) {
-    conn := id.(*websocket.Conn)
-    conn.Close()
+    conn := id.(*concConn)
+    conn.mu.Lock()
+    defer conn.mu.Unlock()
+    conn.conn.Close()
 }
 
 
 func (wsg *WSgame) GameHandler(w http.ResponseWriter, r *http.Request) {
     conn, err := wsupgrader.Upgrade(w, r, nil)
+    cconn := new(concConn)
+    cconn.conn = conn
+
     if err != nil {
         fmt.Println("Failed to set websocket upgrade: %+v", err)
         return
     }
 
-    wsg.HandleJoin(conn)
+    wsg.HandleJoin(cconn)
 
     for {
         _, msg, err := conn.ReadMessage()
@@ -51,8 +64,8 @@ func (wsg *WSgame) GameHandler(w http.ResponseWriter, r *http.Request) {
             break
         }
 
-        wsg.HandleEvt(msg, &conn)
+        wsg.HandleEvt(msg, cconn)
     }
 
-    wsg.HandleLeave(&conn)
+    wsg.HandleLeave(cconn)
 }
