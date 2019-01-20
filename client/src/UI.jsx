@@ -20,7 +20,7 @@ export default class UI {
 
     // Draw Other Players
     world.enemies.forEach((person) => {
-      gfx.ellipse(person.x, person.y, person.size, person.size, "#FFFFFF")//pallet.enemy)
+      gfx.ellipse(person.x, person.y, person.size, person.size, pallet.enemy)
     })
   }
 }

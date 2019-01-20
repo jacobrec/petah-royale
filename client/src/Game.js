@@ -10,16 +10,18 @@ const server = "localhost:8049"
 class MyGame extends JGraphics {
   // Setup is called once
   setup(){
-    this.draw.background("rgb(49,49,49)")
 
     this.world = new World(80, 60)
-      this.coms = new Coms(server+"/game/"+this.props.slug, this.world)
+    this.coms = new Coms(server+"/game/"+this.props.slug, this.world)
     this.ui = new UI()
     this.controller = new Controller(this.world, this)
 
-    this.view.setDimensions(this.world.size.width, this.world.size.height)
-    this.view.setCenter(this.world.size.width/2, this.world.size.height/2)
-    this.view.isYAxisUpPositive(true)
+    this.world.initView = () => ((game, world) => {
+      game.draw.background("rgb(49,49,49)")
+      game.view.setDimensions(world.size.width, world.size.height)
+      game.view.setCenter(world.size.width/2, world.size.height/2)
+      game.view.isYAxisUpPositive(true)
+    })(this, this.world)
   }
 
   // Loop is called many times based on the fps

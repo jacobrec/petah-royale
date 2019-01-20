@@ -6,7 +6,7 @@ export default class World {
 
     this.size = { width, height }
 
-      /*
+    /*
     this.enemies.push(new Moveable(10,10))
     this.enemies.push(new Moveable(20,10))
     this.enemies.push(new Moveable(10,50))

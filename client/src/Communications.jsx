@@ -39,6 +39,7 @@ export default class Coms {
   }
 
   sendMessage(msg) {
+    console.log(msg)
     this.ws.send(JSON.stringify(msg))
   }
 }
@@ -63,9 +64,12 @@ function initWorld(world, data, coms){
     if(p.id !== data.id)
       world.enemies.push(p)
   })
+  world.initView()
   console.log(world)
 }
+
 function doDraw(world, data){
+
 
   if(data.id === world.player.id)
     return
@@ -76,7 +80,6 @@ function doDraw(world, data){
       world.enemies[p].y = data.y
     }
   }
-
 
 
 }
