@@ -152,7 +152,7 @@ func onShoot(g *gameObject, id interface{}, event api.Event) {
 
 func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
 	var big = float64(g.w.Width * g.w.Height)
-	shot := CreateLine(Point{shoot.X, shoot.Y}, Point{shoot.X+big*math.Cos(shoot.Angle), shoot.Y+big*math.Sin(shoot.Angle)})
+	shot := LineSeg{Point{shoot.X, shoot.Y}, Point{shoot.X+big*math.Cos(shoot.Angle), shoot.Y+big*math.Sin(shoot.Angle)}}
 
 	var endX, endY float64
 	for _, w := range g.w.Walls {
@@ -165,7 +165,7 @@ func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
 			}
 		}
 	}
-	shot = CreateLine(Point{shoot.X, shoot.Y}, Point{endX, endY})
+	shot = LineSeg{Point{shoot.X, shoot.Y}, Point{endX, endY}}
 
     fmt.Println("WALL", endX, endY)
     fmt.Println("Checking players")
