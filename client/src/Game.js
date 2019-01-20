@@ -35,7 +35,7 @@ export default class Game extends Component {
   render() {
     return (
       <div className="App">
-        <MyGame slug={this.props.match.params.id} fps={1} id="jgraphic-panel" width="800" height="600"/>
+        <MyGame slug={this.props.match.params.id} fps={40} id="jgraphic-panel" width="800" height="600"/>
       </div>
     )
   }

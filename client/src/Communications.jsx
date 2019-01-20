@@ -29,8 +29,9 @@ export default class Coms {
   }
 
   sendShot(x, y, angle, weapon){
+    console.log("BANG")
     this.sendMessage({
-      action: "attack",
+      action: "shoot",
       data: { angle, x, y, weapon }
     })
 

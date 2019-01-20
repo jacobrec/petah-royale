@@ -121,6 +121,7 @@ func distributeMessage(g* gameObject, ev api.Event, not interface{}){
 }
 
 func onShoot(gf *gameObject, id interface{}, event api.Event){
-    //shoot := event.Data.(*api.Shoot)
+    shoot := event.Data.(*Shoot)
     fmt.Println("BANG")
+    fmt.Println(shoot.Angle)
 }
