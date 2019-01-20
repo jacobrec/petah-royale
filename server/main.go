@@ -7,5 +7,5 @@ import (
 
 func main() {
     wsgame := server.NewWSgame(api.DefaultEventsAR())
-    server.Begin(wsgame, ":8049")
+    server.Begin(&wsgame, ":8049")
 }
