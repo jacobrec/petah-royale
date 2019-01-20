@@ -16,6 +16,11 @@ func NewGameServer(gamefun func() *WSgame) GameServer {
     return GameServer{gamefun, make(map[string]*WSgame)}
 }
 
+func CreateGameServer(router *gin.RouterGroup, gamefun func() *WSgame) {
+    gs := NewGameServer(gamefun)
+    gs.Route(router)
+}
+
 func (gm *GameServer) PostCreate(c *gin.Context) {
     id := randString(32)
     gm.games[id] = gm.gamefun()
@@ -38,6 +43,12 @@ func (gm *GameServer) DelGame(c *gin.Context) {
     id := c.Params.ByName("id")
     delete(gm.games, id)
     c.String(http.StatusOK, id)
+}
+
+func (gm *GameServer) Route(router *gin.RouterGroup) {
+    router.POST("/new", gm.PostCreate)
+    router.GET("/game/:id", gm.GameWS)
+    router.DELETE("/game/:id", gm.DelGame)
 }
 
 
