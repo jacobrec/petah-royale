@@ -34,7 +34,7 @@ type Moveable struct {
 	Id     int     `json:"id"`
 	X      float64 `json:"x"`
 	Y      float64 `json:"y"`
-	Size float64 `json:"radius"`
+	Size float64 `json:"size"`
 }
 
 // all immovable objects are rectangles
@@ -78,15 +78,16 @@ func onJoin(g *gameObject, id interface{}) {
 	g.gameToConnection[pid] = id
 
 	x, y := g.spawner()
-	player := Moveable{pid, x, y, 0.5}
+	player := Moveable{pid, x, y, 1}
 	g.w.Players = append(g.w.Players, player)
 
-	data := New{player.Id, player.X, player.Y, player.Size/2}
+	data := New{player.Id, player.X, player.Y, player.Size}
 	ev := api.Event{"new", data}
 	distributeMessage(g, ev, id)
 
 	initData := InitialMessage{pid, player.X, player.Y, g.w}
 	g.gf.Send(api.Event{"initial", initData}, id)
+    fmt.Println(initData)
 
 }
 
@@ -167,11 +168,11 @@ func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
 	}
 	shot = LineSeg{Point{shoot.X, shoot.Y}, Point{endX, endY}}
 
-    fmt.Println("WALL", endX, endY)
     fmt.Println("Checking players")
     var hitplayer Moveable
     hitplayer.Id = -1
     for _, pl := range g.w.Players {
+        fmt.Println(pl)
 		pwall := Rectangle{pl.X, pl.Y, pl.Size, pl.Size}
         if IsRectorsect(pwall, shot) && pl.Id != pid {
             p, _ := Rectorsect(pwall, shot)

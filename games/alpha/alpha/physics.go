@@ -96,7 +96,6 @@ func Rectorsect(r Rectangle, l LineSeg) (Point, error) {
 	if isValid(p, e) {
 		goodPoints = append(goodPoints, p)
 	}
-	fmt.Println(goodPoints)
 
 	if len(goodPoints) == 0 {
 		return Point{0, 0}, errors.New("Rectorsect, no point")
