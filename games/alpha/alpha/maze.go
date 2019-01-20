@@ -2,11 +2,10 @@ package alpha
 
 import (
     "math/rand"
-    "fmt"
 )
 
 
-func MakeMaze(rooms int, width int, height int, density float32) []Immoveable {
+func MakeMaze(rooms int, width int, height int, density float32) ([]Immoveable, func() (float64,float64)) {
     meanwidth := int(float32(width)*density)
     meanheight := int(float32(height)*density)
 
@@ -29,6 +28,16 @@ func MakeMaze(rooms int, width int, height int, density float32) []Immoveable {
         }
     }
 
+    spawner := func() (float64, float64) {
+        x := rand.Intn(width)
+        y := rand.Intn(height)
+        for !raster[x][y] {
+            x = rand.Intn(width)
+            y = rand.Intn(height)
+        }
+        return float64(x), float64(y)
+    }
+
     imv := make([]Immoveable, 0)
 
     for i := 0; i < width; i++ {
@@ -39,6 +48,7 @@ func MakeMaze(rooms int, width int, height int, density float32) []Immoveable {
         }
     }
 
-    return imv
+
+    return imv, spawner
 }
 
