@@ -152,7 +152,7 @@ func onShoot(g *gameObject, id interface{}, event api.Event) {
 
 
 func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
-	var big = float64(g.w.Width * g.w.Height)
+	var big = float64(g.w.Width * g.w.Height) * 5
 	shot := LineSeg{Point{shoot.X, shoot.Y}, Point{shoot.X+big*math.Cos(shoot.Angle), shoot.Y+big*math.Sin(shoot.Angle)}}
 
 	var endX, endY float64
