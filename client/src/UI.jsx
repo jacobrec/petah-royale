@@ -13,7 +13,7 @@ export default class UI {
     gfx.background(pallet.background)
 
     // Draw Player
-    gfx.ellipse(world.player.x, world.player.y, world.player.size*1.2, world.player.size * 1.2, pallet.player)
+    gfx.ellipse(world.player.x, world.player.y, world.player.size, world.player.size, pallet.player)
 
     // Draw Walls
     world.walls.forEach((wall) => {

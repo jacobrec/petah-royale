@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/SolarLune/resolv/resolv"
 	"github.com/jacobrec/petah-royale/server/api"
 	"github.com/jacobrec/petah-royale/server/core"
 )
 
 func StartWorld(gf core.GameIF) {
+
+    TestRectorsector()
 
 	g := makeGame(gf)
 	fmt.Println("Started World")
@@ -21,7 +22,7 @@ func StartWorld(gf core.GameIF) {
 }
 
 func makeGame(gf core.GameIF) gameObject {
-	w := world{40, 30, make([]Moveable, 0), make([]Immoveable, 0)}
+	w := world{80, 60, make([]Moveable, 0), make([]Immoveable, 0)}
 	walls, spawner := MakeMaze(6, w.Width, w.Height, .25)
 	w.Walls = walls
 
@@ -33,7 +34,7 @@ type Moveable struct {
 	Id     int     `json:"id"`
 	X      float64 `json:"x"`
 	Y      float64 `json:"y"`
-	Radius float64 `json:"radius"`
+	Size float64 `json:"size"`
 }
 
 // all immovable objects are rectangles
@@ -69,11 +70,6 @@ type gameObject struct {
 	LastId           int
 }
 
-type Point struct {
-	X float64
-	Y float64
-}
-
 func onJoin(g *gameObject, id interface{}) {
 	pid := g.LastId
 	g.LastId++
@@ -82,15 +78,16 @@ func onJoin(g *gameObject, id interface{}) {
 	g.gameToConnection[pid] = id
 
 	x, y := g.spawner()
-	player := Moveable{pid, x, y, 0.5}
+	player := Moveable{pid, x, y, 1}
 	g.w.Players = append(g.w.Players, player)
 
-	data := New{player.Id, player.X, player.Y, player.Radius}
+	data := New{player.Id, player.X, player.Y, player.Size}
 	ev := api.Event{"new", data}
 	distributeMessage(g, ev, id)
 
 	initData := InitialMessage{pid, player.X, player.Y, g.w}
 	g.gf.Send(api.Event{"initial", initData}, id)
+    fmt.Println(initData)
 
 }
 
@@ -146,49 +143,42 @@ func onShoot(g *gameObject, id interface{}, event api.Event) {
 	shoot := event.Data.(*Shoot)
 	p := getShotPath(g, shoot, g.connectionToGame[id])
 
-	bang := Bang{shoot.X, shoot.Y, p.X, p.Y}
+	bang := Bang{shoot.X, shoot.Y, p.x, p.y}
 	ev := api.Event{"bang", bang}
 
-	fmt.Println(p.X, p.Y)
+	fmt.Println(p.x, p.y)
 	sendToAll(g, ev)
 }
 
 
 func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
-	var big = float64(g.w.Width * g.w.Height) * 100
-	shot := resolv.NewLine(int32(shoot.X*100), int32(shoot.Y*100), int32(shoot.X*100+big*math.Cos(shoot.Angle)), int32(shoot.Y*100+big*math.Sin(shoot.Angle)))
+	var big = float64(g.w.Width * g.w.Height)
+	shot := LineSeg{Point{shoot.X, shoot.Y}, Point{shoot.X+big*math.Cos(shoot.Angle), shoot.Y+big*math.Sin(shoot.Angle)}}
 
-	var endX, endY int32
+	var endX, endY float64
 	for _, w := range g.w.Walls {
-		wall := resolv.NewRectangle(int32(w.X*100), int32(w.Y*100), int32(w.Width*100), int32(w.Height*100))
-		if shot.IsColliding(wall) {
-            ps := shot.IntersectionPoints(wall)
-            if len(ps) == 0{
-                continue
-            }
-			p := shot.IntersectionPoints(wall)[0]
-			if isP1Closer(int32(shoot.X*100), int32(shoot.Y*100), p.X, p.Y, endX, endY) {
-				endX = p.X
-				endY = p.Y
+		wall := Rectangle{w.X, w.Y, w.Width, w.Height}
+		if IsRectorsect(wall, shot) {
+            p, _ := Rectorsect(wall, shot)
+			if isP1Closer(shoot.X, shoot.Y, p.x, p.y, endX, endY) {
+				endX = p.x
+				endY = p.y
 			}
 		}
 	}
-	shot = resolv.NewLine(int32(shoot.X*100), int32(shoot.Y*100), endX, endY)
+	shot = LineSeg{Point{shoot.X, shoot.Y}, Point{endX, endY}}
 
     fmt.Println("Checking players")
     var hitplayer Moveable
     hitplayer.Id = -1
     for _, pl := range g.w.Players {
-		pwall := resolv.NewRectangle(int32(pl.X*100), int32(pl.Y*100), int32(pl.Radius*2*100), int32(pl.Radius*2*100))
-        if shot.IsColliding(pwall) && pl.Id != pid {
-            ps := shot.IntersectionPoints(pwall)
-            if len(ps) == 0 {
-                continue
-            }
-			p := shot.IntersectionPoints(pwall)[0]
-			if isP1Closer(int32(shoot.X*100), int32(shoot.Y*100), p.X, p.Y, endX, endY) {
-				endX = p.X
-				endY = p.Y
+        fmt.Println(pl)
+		pwall := Rectangle{pl.X, pl.Y, pl.Size, pl.Size}
+        if IsRectorsect(pwall, shot) && pl.Id != pid {
+            p, _ := Rectorsect(pwall, shot)
+			if isP1Closer(shoot.X, shoot.Y, p.x, p.y, endX, endY) {
+				endX = p.x
+				endY = p.y
                 hitplayer = pl
                 fmt.Println(hitplayer)
 			}
@@ -203,14 +193,13 @@ func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
         g.gf.Disconnect(g.gameToConnection[hitplayer.Id])
     }
 
-	return Point{float64(endX) / 100, float64(endY) / 100}
-
+	return Point{endX, endY}
 }
 
-func isP1Closer(x, y, x1, y1, x2, y2 int32) bool {
+func isP1Closer(x, y, x1, y1, x2, y2 float64) bool {
 	return square(x-x1)+square(y-y1) < square(x-x2)+square(y-y2)
 }
 
-func square(x int32) int32 {
+func square(x float64) float64 {
 	return x * x
 }

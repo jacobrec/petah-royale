@@ -67,7 +67,6 @@ function initWorld(world, data, coms){
   })
 
   data.world.players.forEach((p) => {
-    p.size = p.radius * 2
     if(p.id !== data.id)
       world.enemies.push(p)
   })
@@ -89,7 +88,7 @@ function doDraw(world, data){
 }
 
 function doNew(world, data){
-  data.size = data.radius*2
+  console.log(data)
   world.enemies.push(data)
 }
 

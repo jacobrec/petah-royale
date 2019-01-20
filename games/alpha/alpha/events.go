@@ -41,7 +41,7 @@ type New struct {
     Id int `json:"id"`
     X float64 `json:"x"`
     Y float64 `json:"y"`
-    Size float64 `json:"radius"`
+    Size float64 `json:"size"`
 }
 
 type Exit struct {
