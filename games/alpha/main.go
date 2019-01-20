@@ -5,10 +5,13 @@ import (
     "github.com/jacobrec/petah-royale/games/alpha/alpha"
     "github.com/gin-gonic/gin"
     "github.com/gin-contrib/cors"
+    "math/rand"
+    "time"
 )
 
 
 func main() {
+    rand.Seed(time.Now().UTC().UnixNano())
     router := gin.Default()
 
     config := cors.DefaultConfig()
