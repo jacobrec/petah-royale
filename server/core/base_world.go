@@ -2,6 +2,7 @@ package core
 
 import (
     "github.com/jacobrec/petah-royale/server/api"
+    "fmt"
 )
 
 func StartWorld(gf GameIF) {
@@ -88,6 +89,7 @@ func onJoin(g *gameObject, id interface{}){
 }
 
 func onLeave(g *gameObject, id interface{}){
+    fmt.Println("Player left")
 }
 
 func onMove(g *gameObject, id interface{}, event api.Event){

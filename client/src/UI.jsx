@@ -1,9 +1,9 @@
 const pallet = {
-    wall: "#F8B500",
-    player: "#2E94B5",
-    enemy: "#D6231E",
-    background: "#1F2226",
-    shot: "#FFF4E0"
+  wall: "#F8B500",
+  player: "#2E94B5",
+  enemy: "#D6231E",
+  background: "#1F2226",
+  shot: "#FFF4E0"
 }
 
 export default class UI {
@@ -20,7 +20,7 @@ export default class UI {
 
     // Draw Other Players
     world.enemies.forEach((person) => {
-        gfx.ellipse(person.x, person.y, person.size, person.size, pallet.enemy)
+      gfx.ellipse(person.x, person.y, person.size, person.size, "#FFFFFF")//pallet.enemy)
     })
   }
 }

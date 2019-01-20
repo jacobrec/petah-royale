@@ -1,6 +1,6 @@
 export default class World {
-  constructor(width, height, coms) {
-    this.player = new Player(40, 30, coms)
+  constructor(width, height) {
+    this.player = new Player(40, 30)
     this.enemies = []
     this.walls = []
 
@@ -61,9 +61,8 @@ class Moveable {
 }
 
 class Player extends Moveable {
-  constructor(x, y, coms) {
+  constructor(x, y) {
     super(x, y)
-    this.coms = coms
   }
 
   shootTowards(x, y){
@@ -73,7 +72,7 @@ class Player extends Moveable {
 
   update(delta, immovable) {
     super.update(delta, immovable)
-    this.coms.sendMove(this.x, this.y)
+    this.coms && this.coms.sendMove(this.x, this.y)
   }
 
 }
