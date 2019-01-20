@@ -12,8 +12,8 @@ type rawEvent struct {
 }
 
 type Event struct {
-    Action string
-    Data interface{}
+    Action string        `json:"action"`
+    Data interface{}     `json:"data"`
 }
 
 type ActionReader struct {
