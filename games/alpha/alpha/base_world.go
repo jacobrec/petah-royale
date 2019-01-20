@@ -21,9 +21,8 @@ func StartWorld(gf core.GameIF) {
 }
 
 func makeGame(gf core.GameIF) gameObject {
-	w := world{80, 60, make([]Moveable, 0), make([]Immoveable, 0)}
-	//w.Walls = append(w.Walls, Immoveable{0,0,80,1}, Immoveable{0,0,1,60}, Immoveable{0,59,80,1}, Immoveable{79,0,1,60})
-	walls, spawner := MakeMaze(6, 80, 60, .25)
+	w := world{40, 30, make([]Moveable, 0), make([]Immoveable, 0)}
+	walls, spawner := MakeMaze(6, w.Width, w.Height, .25)
 	w.Walls = walls
 
 	return gameObject{w, spawner, gf, make(map[interface{}]int, 3), make(map[int]interface{}, 3), 0}
@@ -156,7 +155,7 @@ func onShoot(g *gameObject, id interface{}, event api.Event) {
 
 
 func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
-	var big = float64(g.w.Width * g.w.Height)
+	var big = float64(g.w.Width * g.w.Height) * 100
 	shot := resolv.NewLine(int32(shoot.X*100), int32(shoot.Y*100), int32(shoot.X*100+big*math.Cos(shoot.Angle)), int32(shoot.Y*100+big*math.Sin(shoot.Angle)))
 
 	var endX, endY int32
@@ -174,12 +173,14 @@ func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
 			}
 		}
 	}
+	shot = resolv.NewLine(int32(shoot.X*100), int32(shoot.Y*100), endX, endY)
 
-    var hitplayer *Moveable
+    fmt.Println("Checking players")
+    var hitplayer Moveable
+    hitplayer.Id = -1
     for _, pl := range g.w.Players {
 		pwall := resolv.NewRectangle(int32(pl.X*100), int32(pl.Y*100), int32(pl.Radius*2*100), int32(pl.Radius*2*100))
         if shot.IsColliding(pwall) && pl.Id != pid {
-            fmt.Println("hello")
             ps := shot.IntersectionPoints(pwall)
             if len(ps) == 0 {
                 continue
@@ -188,13 +189,14 @@ func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
 			if isP1Closer(int32(shoot.X*100), int32(shoot.Y*100), p.X, p.Y, endX, endY) {
 				endX = p.X
 				endY = p.Y
-                hitplayer = &pl
+                hitplayer = pl
+                fmt.Println(hitplayer)
 			}
         }
     }
 
-    if hitplayer != nil {
-        fmt.Println("killed", hitplayer)
+    if hitplayer.Id != -1 {
+        fmt.Println("killed", hitplayer, "by", pid)
         dead := Dead{hitplayer.Id}
         ev := api.Event{"dead", dead}
         sendToAll(g, ev)

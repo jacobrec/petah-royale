@@ -72,6 +72,8 @@ function initWorld(world, data, coms){
       world.enemies.push(p)
   })
   world.initView()
+
+  console.log("INIT: ", world)
 }
 
 function doDraw(world, data){
@@ -102,7 +104,7 @@ function doBang(world, data){
 }
 
 function doDead(world, data){
-  console.log(data)
+  console.log("Player Died", data)
   if(data.id === world.player.id){
     // kill self if you died
     world.player.alive = false
