@@ -1,6 +1,6 @@
 export default class Coms {
   constructor(url, world){
-    const ws = new WebSocket("ws://" + url + "/wsgame")
+    const ws = new WebSocket("ws://" + url)
     ws.onopen = (event) => this.setup(ws)
     ws.onmessage = (event) => this.messageRecived(JSON.parse(event.data), world)
 
@@ -46,8 +46,6 @@ export default class Coms {
 
 // message handlers
 function initWorld(world, data, coms){
-  console.log(data)
-  console.log(world)
   world.player.id = data.id
   world.player.x = data.x
   world.player.y = data.y

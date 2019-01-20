@@ -6,13 +6,14 @@ import Controller from "./Controller"
 import UI from "./UI"
 import './App.css';
 
+const server = "localhost:8049"
 class MyGame extends JGraphics {
   // Setup is called once
   setup(){
     this.draw.background("rgb(49,49,49)")
 
     this.world = new World(80, 60)
-    this.coms = new Coms("localhost:8049", this.world)
+      this.coms = new Coms(server+"/game/"+this.props.slug, this.world)
     this.ui = new UI()
     this.controller = new Controller(this.world, this)
 
@@ -32,7 +33,7 @@ export default class Game extends Component {
   render() {
     return (
       <div className="App">
-        <MyGame fps={40} id="jgraphic-panel" width="800" height="600"/>
+        <MyGame slug={this.props.match.params.id} fps={40} id="jgraphic-panel" width="800" height="600"/>
       </div>
     )
   }
