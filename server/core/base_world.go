@@ -45,6 +45,14 @@ type world struct {
     walls immovable[]
 }
 
+func (w* world) getPlayerById(id) *moveable {
+    for _, p := range w.players {
+        if p.id == p {
+            return &p
+        }
+    }
+}
+
 type gameObject struct {
     w world
     gf *GameIF
@@ -54,7 +62,7 @@ type gameObject struct {
 
 var playerCount int
 
-func onJoin(gf *gameObject, id interface{}){
+func onJoin(g *gameObject, id interface{}){
     pid = playerCount
     playerCount++
 
@@ -62,18 +70,31 @@ func onJoin(gf *gameObject, id interface{}){
     gameToConnection[pid] = id
 
     player := moveable{pid, 2, 2, 0.5}
-    gf.w.players = append(gf.w.players, player)
+    g.w.players = append(g.w.players, player)
 
-    gf.sendPlayerMove(player)
+    g.sendPlayerMove(player)
 }
 
-func onLeave(gf *gameObject, id interface{}){
+func onLeave(g *gameObject, id interface{}){
 }
 
-func onMove(gf *gameObject, id interface{}, event api.Event){
+func onMove(g *gameObject, id interface{}, event api.Event){
     move := event.Data.(api.Move)
+    pid := connectionToGame[id]
+
+    pp := g.w.getPlayerById(pid)
+    pp.x = move.X
+    pp.y = move.Y
+
+    g.sendPlayerMove(*pp)
 }
-func (gf* gameObject) sendPlayerMove(player moveable){
+
+func (g* gameObject) sendPlayerMove(player moveable){
+    data := api.Draw{player.id, player.x, player.y}
+    ev := api.Event{"draw", data}
+    for _, conn := range g.gameToConnection {
+        g.gf.Send(ev, conn)
+    }
 }
 
 func onShoot(gf *gameObject, id interface{}, event api.Shoot){

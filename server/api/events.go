@@ -8,6 +8,8 @@ func DefaultEventsAR() ActionReader {
     return ActionReader{map[string]reflect.Type{
         "move": reflect.TypeOf(Move{}),
         "shoot": reflect.TypeOf(Shoot{}),
+
+        "draw": reflect.TypeOf(Draw{}),
     }}
 }
 
@@ -20,6 +22,12 @@ type Shoot struct {
 }
 
 type Move struct {
+    X float64 `json:"x"`
+    Y float64 `json:"y"`
+}
+
+type Draw struct {
+    Id int `json:"id"`
     X float64 `json:"x"`
     Y float64 `json:"y"`
 }
