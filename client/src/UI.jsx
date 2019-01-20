@@ -22,5 +22,11 @@ export default class UI {
     world.enemies.forEach((person) => {
       gfx.ellipse(person.x, person.y, person.size, person.size, pallet.enemy)
     })
+
+    // Draw Shots
+    console.log(world.shots)
+    world.shots.forEach((shot) => {
+      gfx.line(shot.X1, shot.Y1, shot.X2, shot.Y2, pallet.shot)
+    })
   }
 }

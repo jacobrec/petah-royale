@@ -1,8 +1,10 @@
 export default class World {
   constructor(width, height) {
     this.player = new Player(40, 30)
+    this.player.world = this
     this.enemies = []
     this.walls = []
+    this.shots = []
 
     this.size = { width, height }
 
@@ -67,7 +69,8 @@ class Player extends Moveable {
 
   shootTowards(x, y){
     const angle = Math.atan2( y - this.y, x - this.x )
-    this.coms.sendShot(this.x, this.y, angle, 0)
+    //this.coms.sendShot(this.x, this.y, angle, 0)
+    this.world.shots.push({X1: x, Y1: y, X2: this.x, Y2:this.y})
   }
 
   update(delta, immovable) {

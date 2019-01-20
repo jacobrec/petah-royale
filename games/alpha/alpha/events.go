@@ -13,6 +13,7 @@ func EventsAR() api.ActionReader {
         "new": reflect.TypeOf(New{}),
         "exit": reflect.TypeOf(Exit{}),
         "draw": reflect.TypeOf(Draw{}),
+        "bang": reflect.TypeOf(Bang{}),
     }}
 }
 
@@ -46,3 +47,16 @@ type Exit struct {
     Id int `json:"id"`
 }
 
+type Bang struct {
+    X1 float64 `json:"x1"`
+    Y1 float64 `json:"y1"`
+    X2 float64 `json:"x2"`
+    Y2 float64 `json:"y2"`
+}
+
+type InitialMessage struct {
+    Id int `json:"id"`
+    X float64 `json:"x"`
+    Y float64 `json:"y"`
+    World world `json:"world"`
+}

@@ -21,6 +21,8 @@ export default class Coms {
         return doNew(world, msg.data)
       case "exit":
         return doExit(world, msg.data)
+      case "bang":
+        return doBang(world, msg.data)
       default:
         console.error("Unknown Message Type")
         console.error(msg)
@@ -29,7 +31,6 @@ export default class Coms {
   }
 
   sendShot(x, y, angle, weapon){
-    console.log("BANG")
     this.sendMessage({
       action: "shoot",
       data: { angle, x, y, weapon }
@@ -91,3 +92,8 @@ function doNew(world, data){
 function doExit(world, data){
   world.enemies = world.enemies.filter((e) => !e.id === data.id)
 }
+function doBang(world, data){
+  data.stamp = Date.now()
+    //world.shots.push(data)
+}
+
