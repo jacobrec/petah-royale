@@ -20,7 +20,7 @@ func makeGame(gf core.GameIF) gameObject {
     w := world{80, 60, make([]Moveable, 0), make([]Immoveable, 0)}
     w.Walls = append(w.Walls, Immoveable{0,0,80,1}, Immoveable{0,0,1,60}, Immoveable{0,59,80,1}, Immoveable{79,0,1,60})
 
-    return gameObject{w, gf, make(map[interface{}]int, 3), make(map[int]interface{}, 3)}
+    return gameObject{w, gf, make(map[interface{}]int, 3), make(map[int]interface{}, 3), 0}
 }
 
 
@@ -61,6 +61,7 @@ type gameObject struct {
     gf core.GameIF
     connectionToGame map[interface{}]int
     gameToConnection map[int]interface{}
+    LastId int
 }
 
 type InitialMessage struct {
@@ -70,11 +71,10 @@ type InitialMessage struct {
     World world `json:"world"`
 }
 
-var playerCount int
 
 func onJoin(g *gameObject, id interface{}){
-    pid := playerCount
-    playerCount++
+    pid := g.LastId
+    g.LastId++
 
     g.connectionToGame[id] = pid
     g.gameToConnection[pid] = id
@@ -82,15 +82,20 @@ func onJoin(g *gameObject, id interface{}){
     player := Moveable{pid, 2, 2, 0.5}
     g.w.Players = append(g.w.Players, player)
 
-    g.sendPlayerMove(player)
+    data := New{player.Id, player.X, player.Y, player.Radius}
+    ev := api.Event{"new", data}
+    distributeMessage(g, ev, id)
 
-    data := InitialMessage{pid, player.X, player.Y, g.w}
-    g.gf.Send(api.Event{"initial", data}, id)
+    initData := InitialMessage{pid, player.X, player.Y, g.w}
+    g.gf.Send(api.Event{"initial", initData}, id)
 
 }
 
 func onLeave(g *gameObject, id interface{}){
-    fmt.Println("Player left")
+    pid := g.connectionToGame[id]
+    data := Exit{pid}
+    ev := api.Event{"exit", data}
+    distributeMessage(g, ev, id)
 }
 
 func onMove(g *gameObject, id interface{}, event api.Event){
@@ -101,17 +106,21 @@ func onMove(g *gameObject, id interface{}, event api.Event){
     pp.X = move.X
     pp.Y = move.Y
 
-    g.sendPlayerMove(*pp)
+    data := Draw{pp.Id, pp.X, pp.Y}
+    ev := api.Event{"draw", data}
+    distributeMessage(g, ev, id)
 }
 
-func (g* gameObject) sendPlayerMove(player Moveable){
-    data := Draw{player.Id, player.X, player.Y}
-    ev := api.Event{"draw", data}
+
+func distributeMessage(g* gameObject, ev api.Event, not interface{}){
     for _, conn := range g.gameToConnection {
-        g.gf.Send(ev, conn)
+        if not != conn {
+            g.gf.Send(ev, conn)
+        }
     }
 }
 
 func onShoot(gf *gameObject, id interface{}, event api.Event){
     //shoot := event.Data.(*api.Shoot)
+    fmt.Println("BANG")
 }

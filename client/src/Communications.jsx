@@ -17,6 +17,10 @@ export default class Coms {
         return initWorld(world, msg.data, this)
       case "draw":
         return doDraw(world, msg.data)
+      case "new":
+        return doNew(world, msg.data)
+      case "exit":
+        return doExit(world, msg.data)
       default:
         console.error("Unknown Message Type")
         console.error(msg)
@@ -39,7 +43,6 @@ export default class Coms {
   }
 
   sendMessage(msg) {
-    console.log(msg)
     this.ws.send(JSON.stringify(msg))
   }
 }
@@ -65,12 +68,9 @@ function initWorld(world, data, coms){
       world.enemies.push(p)
   })
   world.initView()
-  console.log(world)
 }
 
 function doDraw(world, data){
-
-
   if(data.id === world.player.id)
     return
 
@@ -80,6 +80,13 @@ function doDraw(world, data){
       world.enemies[p].y = data.y
     }
   }
+}
 
+function doNew(world, data){
+  data.size = data.radius*2
+  world.enemies.push(data)
+}
 
+function doExit(world, data){
+  world.enemies = world.enemies.filter((e) => !e.id === data.id)
 }
