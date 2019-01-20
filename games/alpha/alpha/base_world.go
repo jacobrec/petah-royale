@@ -3,7 +3,6 @@ package alpha
 import (
     "github.com/jacobrec/petah-royale/server/api"
     "github.com/jacobrec/petah-royale/server/core"
-    "fmt"
 )
 
 func StartWorld(gf core.GameIF) {
@@ -82,19 +81,20 @@ func onJoin(g *gameObject, id interface{}){
     player := Moveable{pid, 2, 2, 0.5}
     g.w.Players = append(g.w.Players, player)
 
-    data := New{player.Id, player.X, player.Y, player.Size}
+    initData := InitialMessage{pid, player.X, player.Y, g.w}
+    g.gf.Send(api.Event{"initial", initData}, id)
+
+
+    data := New{player.Id, player.X, player.Y, player.Radius}
     ev := api.Event{"new", data}
     for _, conn := range g.gameToConnection {
         g.gf.Send(ev, conn)
     }
-
-    data := InitialMessage{pid, player.X, player.Y, g.w}
-    g.gf.Send(api.Event{"initial", data}, id)
-
 }
 
 func onLeave(g *gameObject, id interface{}){
-    data := Exit{g.w.getPlayerById(pid)}
+    pid := g.connectionToGame[id]
+    data := Exit{pid}
     ev := api.Event{"exit", data}
     for _, conn := range g.gameToConnection {
         g.gf.Send(ev, conn)
