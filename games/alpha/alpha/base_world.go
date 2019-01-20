@@ -140,7 +140,7 @@ func distributeMessage(g *gameObject, ev api.Event, not interface{}) {
 
 func onShoot(g *gameObject, id interface{}, event api.Event) {
 	shoot := event.Data.(*Shoot)
-	p := getShotPath(g, shoot)
+	p := getShotPath(g, shoot, g.connectionToGame[id])
 
 	bang := Bang{shoot.X, shoot.Y, p.X, p.Y}
 	ev := api.Event{"bang", bang}
@@ -150,7 +150,8 @@ func onShoot(g *gameObject, id interface{}, event api.Event) {
 	g.gf.Send(ev, id)
 }
 
-func getShotPath(g *gameObject, shoot *Shoot) Point {
+
+func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
 	var big = float64(g.w.Width * g.w.Height)
 	shot := resolv.NewLine(int32(shoot.X*100), int32(shoot.Y*100), int32(shoot.X*100+big*math.Cos(shoot.Angle)), int32(shoot.Y*100+big*math.Sin(shoot.Angle)))
 
@@ -169,6 +170,28 @@ func getShotPath(g *gameObject, shoot *Shoot) Point {
 			}
 		}
 	}
+
+    var hitplayer *Moveable
+    for _, pl := range g.w.Players {
+		pwall := resolv.NewRectangle(int32(pl.X*100), int32(pl.Y*100), int32(pl.Radius*2*100), int32(pl.Radius*2*100))
+        if shot.IsColliding(pwall) && pl.Id != pid {
+            fmt.Println("hello")
+            ps := shot.IntersectionPoints(pwall)
+            if len(ps) == 0 {
+                continue
+            }
+			p := shot.IntersectionPoints(pwall)[0]
+			if isP1Closer(int32(shoot.X*100), int32(shoot.Y*100), p.X, p.Y, endX, endY) {
+				endX = p.X
+				endY = p.Y
+                hitplayer = &pl
+			}
+        }
+    }
+
+    if hitplayer != nil {
+        fmt.Println("killed", hitplayer)
+    }
 
 	return Point{float64(endX) / 100, float64(endY) / 100}
 
