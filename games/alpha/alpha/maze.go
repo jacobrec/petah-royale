@@ -16,12 +16,12 @@ func MakeMaze(rooms int, width int, height int, density float32) ([]Immoveable, 
     }
 
     for n := 0; n < rooms; n++ {
-        x := rand.Intn(width - meanwidth)
-        y := rand.Intn(height - meanheight)
         w := meanwidth - 2 + rand.Intn(4)
         h := meanheight - 2 + rand.Intn(4)
+        x := 1 + rand.Intn(width - w - 2)
+        y := 1 + rand.Intn(height - h - 2)
 
-        if hasOverlap(raster, x, y, w, h) {
+        if hasOverlap(raster, x-1, y-1, w+2, h+2) {
             n--
             continue
         }
@@ -72,7 +72,8 @@ func MakeMaze(rooms int, width int, height int, density float32) ([]Immoveable, 
 
 func drillForcedPath(raster[][]bool, xb int, yb int, w int, h int, width int, height int) {
     i := false
-    for !i {
+    // upper bound, sometimes paths can't be found
+    for j := 0; !i && j < 1000;  j++ {
         x := xb + rand.Intn(w)
         y := yb + rand.Intn(h)
 
