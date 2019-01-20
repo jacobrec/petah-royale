@@ -87,7 +87,6 @@ func onJoin(g *gameObject, id interface{}) {
 
 	initData := InitialMessage{pid, player.X, player.Y, g.w}
 	g.gf.Send(api.Event{"initial", initData}, id)
-    fmt.Println(initData)
 
 }
 
@@ -166,15 +165,17 @@ func getShotPath(g *gameObject, shoot *Shoot, pid int) Point {
 			}
 		}
 	}
-	shot = LineSeg{Point{shoot.X, shoot.Y}, Point{endX, endY}}
+//	shot = LineSeg{Point{shoot.X, shoot.Y}, Point{endX, endY}}
 
     fmt.Println("Checking players")
     var hitplayer Moveable
     hitplayer.Id = -1
     for _, pl := range g.w.Players {
-        fmt.Println(pl)
+        if pl.Id == pid {
+            continue
+        }
 		pwall := Rectangle{pl.X, pl.Y, pl.Size, pl.Size}
-        if IsRectorsect(pwall, shot) && pl.Id != pid {
+        if IsRectorsect(pwall, shot) {
             p, _ := Rectorsect(pwall, shot)
 			if isP1Closer(shoot.X, shoot.Y, p.x, p.y, endX, endY) {
 				endX = p.x

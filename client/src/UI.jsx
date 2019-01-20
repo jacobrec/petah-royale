@@ -13,7 +13,7 @@ export default class UI {
     gfx.background(pallet.background)
 
     // Draw Player
-    gfx.ellipse(world.player.x, world.player.y, world.player.size, world.player.size, pallet.player)
+    gfx.rectangle(world.player.x, world.player.y, world.player.size, world.player.size, pallet.player)
 
     // Draw Walls
     world.walls.forEach((wall) => {
@@ -22,7 +22,7 @@ export default class UI {
 
     // Draw Other Players
     world.enemies.forEach((person) => {
-      gfx.ellipse(person.x, person.y, person.size, person.size, pallet.enemy)
+      gfx.rectangle(person.x, person.y, person.size, person.size, pallet.enemy)
     })
 
     // Draw Shots
