@@ -81,24 +81,20 @@ func onJoin(g *gameObject, id interface{}){
     player := Moveable{pid, 2, 2, 0.5}
     g.w.Players = append(g.w.Players, player)
 
+    data := New{player.Id, player.X, player.Y, player.Radius}
+    ev := api.Event{"new", data}
+    distributeMessage(g, ev, id)
+
     initData := InitialMessage{pid, player.X, player.Y, g.w}
     g.gf.Send(api.Event{"initial", initData}, id)
 
-
-    data := New{player.Id, player.X, player.Y, player.Radius}
-    ev := api.Event{"new", data}
-    for _, conn := range g.gameToConnection {
-        g.gf.Send(ev, conn)
-    }
 }
 
 func onLeave(g *gameObject, id interface{}){
     pid := g.connectionToGame[id]
     data := Exit{pid}
     ev := api.Event{"exit", data}
-    for _, conn := range g.gameToConnection {
-        g.gf.Send(ev, conn)
-    }
+    distributeMessage(g, ev, id)
 }
 
 func onMove(g *gameObject, id interface{}, event api.Event){
@@ -109,14 +105,17 @@ func onMove(g *gameObject, id interface{}, event api.Event){
     pp.X = move.X
     pp.Y = move.Y
 
-    g.sendPlayerMove(*pp)
+    data := Draw{pp.Id, pp.X, pp.Y}
+    ev := api.Event{"draw", data}
+    distributeMessage(g, ev, id)
 }
 
-func (g* gameObject) sendPlayerMove(player Moveable){
-    data := Draw{player.Id, player.X, player.Y}
-    ev := api.Event{"draw", data}
+
+func distributeMessage(g* gameObject, ev api.Event, not interface{}){
     for _, conn := range g.gameToConnection {
-        g.gf.Send(ev, conn)
+        if not != conn {
+            g.gf.Send(ev, conn)
+        }
     }
 }
 
