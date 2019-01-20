@@ -18,9 +18,11 @@ func StartWorld(gf core.GameIF) {
 
 func makeGame(gf core.GameIF) gameObject {
     w := world{80, 60, make([]Moveable, 0), make([]Immoveable, 0)}
-    w.Walls = append(w.Walls, Immoveable{0,0,80,1}, Immoveable{0,0,1,60}, Immoveable{0,59,80,1}, Immoveable{79,0,1,60})
+    //w.Walls = append(w.Walls, Immoveable{0,0,80,1}, Immoveable{0,0,1,60}, Immoveable{0,59,80,1}, Immoveable{79,0,1,60})
+    walls, spawner := MakeMaze(6, 80, 60, .25, 10)
+    w.Walls = walls
 
-    return gameObject{w, gf, make(map[interface{}]int, 3), make(map[int]interface{}, 3), 0}
+    return gameObject{w, spawner, gf, make(map[interface{}]int, 3), make(map[int]interface{}, 3), 0}
 }
 
 
@@ -58,6 +60,7 @@ func (w* world) getPlayerById(id int) *Moveable {
 
 type gameObject struct {
     w world
+    spawner func() (float64, float64)
     gf core.GameIF
     connectionToGame map[interface{}]int
     gameToConnection map[int]interface{}
@@ -79,7 +82,8 @@ func onJoin(g *gameObject, id interface{}){
     g.connectionToGame[id] = pid
     g.gameToConnection[pid] = id
 
-    player := Moveable{pid, 2, 2, 0.5}
+    x, y := g.spawner()
+    player := Moveable{pid, x, y, 0.5}
     g.w.Players = append(g.w.Players, player)
 
     data := New{player.Id, player.X, player.Y, player.Radius}

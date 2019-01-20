@@ -98,7 +98,7 @@ function circleLineCollides(cx, cy, cr, px1, py1, px2, py2){
   return inteceptCircleLineSeg({center: {x:cx,y:cy}, radius: cr}, {p1: {x: px1, y: py1}, p2: {x: px2, y: py2}})
 }
 function inteceptCircleLineSeg(circle, line){
-  var b, c, d, v1, v2;
+  var b, c, d, v1, v2, u1, u2;
   v1 = {};
   v2 = {};
   v1.x = line.p2.x - line.p1.x;
@@ -109,5 +109,16 @@ function inteceptCircleLineSeg(circle, line){
   c = 2 * (v1.x * v1.x + v1.y * v1.y);
   b *= -2;
   d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
-  return !isNaN(d)
+  if (isNaN(d)) {
+    return false
+  }
+  u1 = (b - d) / c;  // these represent the unit distance of point one and two on the line
+  u2 = (b + d) / c;
+  if(u1 <= 1 && u1 >= 0){  // add point if on the line segment
+    return true;
+  }
+  if(u2 <= 1 && u2 >= 0){  // second add point if on the line segment
+    return true;
+  }
+  return false;
 }
